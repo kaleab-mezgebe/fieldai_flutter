@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fieldai_flutter/core/theme/app_theme.dart';
+import 'package:fieldai_flutter/core/localization/app_strings.dart';
 
 class AiExplanationScreen extends StatelessWidget {
   final Map<String, dynamic> prediction;
@@ -32,7 +33,7 @@ class AiExplanationScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: context.bgColor,
       appBar: AppBar(
-        title: const Text('Agronomic AI Protocol'),
+        title: Text(context.tr('agronomic_protocol')),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -80,7 +81,7 @@ class AiExplanationScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 3),
                         Text(
-                          '$crop • Field Diagnostic Protocol',
+                          '$crop • ${context.tr('agronomic_protocol')}',
                           style: TextStyle(fontSize: 13, color: context.textMuted),
                         ),
                       ],
@@ -93,7 +94,7 @@ class AiExplanationScreen extends StatelessWidget {
 
             // Diagnostic Rationale Section
             Text(
-              'Diagnostic Evidence & Leaf Pathology',
+              context.tr('diagnostic_rationale'),
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: context.textPrimary),
             ),
             const SizedBox(height: 10),
@@ -149,9 +150,9 @@ class AiExplanationScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Conducive Weather Microclimate',
-                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppTheme.warningAmber),
+                        Text(
+                          context.tr('conducive_climate'),
+                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppTheme.warningAmber),
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -168,7 +169,7 @@ class AiExplanationScreen extends StatelessWidget {
 
             // Recommended Field Actions
             Text(
-              'Integrated Pest Management (IPM) Interventions',
+              context.tr('ipm_interventions'),
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: context.textPrimary),
             ),
             const SizedBox(height: 12),
@@ -194,7 +195,7 @@ class AiExplanationScreen extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'AI predictions are evidence-based tools designed to assist field scouting.',
+                      context.tr('ai_disclaimer'),
                       style: TextStyle(fontSize: 11, color: context.textMuted),
                     ),
                   ),

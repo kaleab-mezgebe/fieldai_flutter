@@ -5,6 +5,7 @@ import 'package:fieldai_flutter/core/theme/app_theme.dart';
 import 'package:fieldai_flutter/core/network/api_client.dart';
 import 'package:fieldai_flutter/core/database/app_database.dart';
 import 'package:fieldai_flutter/core/ai/edge_inference_service.dart';
+import 'package:fieldai_flutter/core/localization/app_strings.dart';
 import 'package:fieldai_flutter/features/disease_analysis/presentation/screens/ai_explanation_screen.dart';
 import 'package:fieldai_flutter/features/observations/presentation/screens/observation_screen.dart';
 
@@ -237,7 +238,7 @@ class _CropAnalysisScreenState extends State<CropAnalysisScreen> {
     return Scaffold(
       backgroundColor: context.bgColor,
       appBar: AppBar(
-        title: const Text('Crop Disease Analysis'),
+        title: Text(context.tr('analyze_crop')),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -283,7 +284,7 @@ class _CropAnalysisScreenState extends State<CropAnalysisScreen> {
                               ),
                               const SizedBox(height: 12),
                               Text(
-                                'Sample Selected: ${_sampleLeaves.firstWhere((s) => s['key'] == _selectedSampleKey)['label']}',
+                                '${context.tr('crop')}: ${_sampleLeaves.firstWhere((s) => s['key'] == _selectedSampleKey)['label']}',
                                 style: TextStyle(
                                   color: context.textPrimary,
                                   fontWeight: FontWeight.w700,
@@ -292,7 +293,7 @@ class _CropAnalysisScreenState extends State<CropAnalysisScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                'Edge AI inference ready',
+                                context.tr('extracting_markers'),
                                 style: TextStyle(color: context.textMuted, fontSize: 12),
                               ),
                             ],
@@ -309,13 +310,9 @@ class _CropAnalysisScreenState extends State<CropAnalysisScreen> {
                               ),
                               const SizedBox(height: 12),
                               Text(
-                                'Capture or upload field tomato leaf photo',
-                                style: TextStyle(color: context.textMuted, fontSize: 14),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Works completely offline with on-device AI',
-                                style: TextStyle(color: context.textMuted.withValues(alpha: 0.7), fontSize: 11),
+                                context.tr('analyze_crop_sub'),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: context.textMuted, fontSize: 13),
                               ),
                             ],
                           ),
@@ -330,7 +327,7 @@ class _CropAnalysisScreenState extends State<CropAnalysisScreen> {
                   child: ElevatedButton.icon(
                     onPressed: _isAnalyzing ? null : () => _pickImage(ImageSource.camera),
                     icon: const Icon(Icons.camera_alt_rounded),
-                    label: const Text('Camera'),
+                    label: Text(context.tr('camera')),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -344,7 +341,7 @@ class _CropAnalysisScreenState extends State<CropAnalysisScreen> {
                     ),
                     onPressed: _isAnalyzing ? null : () => _pickImage(ImageSource.gallery),
                     icon: const Icon(Icons.photo_library_outlined),
-                    label: const Text('Gallery'),
+                    label: Text(context.tr('gallery')),
                   ),
                 ),
               ],
@@ -353,7 +350,7 @@ class _CropAnalysisScreenState extends State<CropAnalysisScreen> {
 
             // Sample Leaf Selector Chips
             Text(
-              'Or Test with Realistic Field Samples:',
+              context.tr('test_samples'),
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
@@ -404,12 +401,12 @@ class _CropAnalysisScreenState extends State<CropAnalysisScreen> {
                       const CircularProgressIndicator(color: AppTheme.primaryGreen),
                       const SizedBox(height: 16),
                       Text(
-                        'Running AI Disease Identification Pipeline...',
+                        context.tr('running_ai'),
                         style: TextStyle(color: context.textMuted, fontSize: 14, fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Extracting foliar lesion geometry & pathogen markers',
+                        context.tr('extracting_markers'),
                         style: TextStyle(color: context.textMuted, fontSize: 12),
                       ),
                     ],
@@ -440,7 +437,7 @@ class _CropAnalysisScreenState extends State<CropAnalysisScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Diagnosis Result',
+                          context.tr('diagnosis_result'),
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
@@ -482,18 +479,18 @@ class _CropAnalysisScreenState extends State<CropAnalysisScreen> {
                     ),
                     Divider(color: context.cardBorder, height: 28),
 
-                    _buildResultRow(context, 'Crop', _predictionResult!['crop'] ?? 'Tomato'),
+                    _buildResultRow(context, context.tr('crop'), _predictionResult!['crop'] ?? 'Tomato'),
                     const SizedBox(height: 10),
                     _buildResultRow(
                       context,
-                      'Identified Condition',
+                      context.tr('identified_condition'),
                       _predictionResult!['condition_name'] ?? 'Early Blight',
                       isHighlight: true,
                     ),
                     const SizedBox(height: 10),
                     _buildResultRow(
                       context,
-                      'AI Confidence',
+                      context.tr('ai_confidence'),
                       '${_predictionResult!['confidence']}%',
                     ),
                     const SizedBox(height: 14),
@@ -526,7 +523,7 @@ class _CropAnalysisScreenState extends State<CropAnalysisScreen> {
                                 ),
                               );
                             },
-                            child: const Text('View Full Protocol'),
+                            child: Text(context.tr('view_protocol')),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -548,7 +545,7 @@ class _CropAnalysisScreenState extends State<CropAnalysisScreen> {
                                 ),
                               );
                             },
-                            child: const Text('Log Observation'),
+                            child: Text(context.tr('log_observation')),
                           ),
                         ),
                       ],

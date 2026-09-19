@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:fieldai_flutter/core/theme/app_theme.dart';
 import 'package:fieldai_flutter/core/database/app_database.dart';
 import 'package:fieldai_flutter/core/sync/sync_service.dart';
+import 'package:fieldai_flutter/core/localization/app_strings.dart';
 
 class ObservationScreen extends StatefulWidget {
   final String? prefilledCrop;
@@ -132,15 +133,15 @@ class _ObservationScreenState extends State<ObservationScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: context.surfaceCard,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.check_circle_rounded, color: AppTheme.primaryGreen),
-            SizedBox(width: 8),
-            Text('Saved to SQLite', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Icon(Icons.check_circle_rounded, color: AppTheme.primaryGreen),
+            const SizedBox(width: 8),
+            Text(context.tr('saved_local_title'), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           ],
         ),
         content: Text(
-          'Field observation recorded successfully to on-device database.\n\nPending queue updated and ready for cloud synchronization.',
+          context.tr('saved_local_msg'),
           style: TextStyle(color: context.textMuted, fontSize: 13, height: 1.4),
         ),
         actions: [
@@ -149,7 +150,7 @@ class _ObservationScreenState extends State<ObservationScreen> {
               Navigator.of(ctx).pop();
               Navigator.of(context).pop();
             },
-            child: const Text('Return to Dashboard'),
+            child: Text(context.tr('return_dashboard')),
           ),
         ],
       ),
@@ -161,7 +162,7 @@ class _ObservationScreenState extends State<ObservationScreen> {
     return Scaffold(
       backgroundColor: context.bgColor,
       appBar: AppBar(
-        title: const Text('Record Field Observation'),
+        title: Text(context.tr('record_obs')),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -172,7 +173,7 @@ class _ObservationScreenState extends State<ObservationScreen> {
             children: [
               // Crop Quick Chips
               Text(
-                'Target Crop',
+                context.tr('target_crop'),
                 style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: context.textMuted),
               ),
               const SizedBox(height: 8),
@@ -196,9 +197,9 @@ class _ObservationScreenState extends State<ObservationScreen> {
               TextFormField(
                 controller: _cropController,
                 style: TextStyle(color: context.textPrimary),
-                decoration: const InputDecoration(
-                  labelText: 'Crop Species / Variety',
-                  prefixIcon: Icon(Icons.eco_outlined, color: AppTheme.primaryGreen),
+                decoration: InputDecoration(
+                  labelText: context.tr('crop'),
+                  prefixIcon: const Icon(Icons.eco_outlined, color: AppTheme.primaryGreen),
                 ),
                 validator: (val) => val == null || val.isEmpty ? 'Please enter crop name' : null,
               ),
@@ -220,7 +221,7 @@ class _ObservationScreenState extends State<ObservationScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('GPS Field Coordinates', style: TextStyle(fontSize: 12, color: context.textMuted)),
+                          Text(context.tr('gps_coordinates'), style: TextStyle(fontSize: 12, color: context.textMuted)),
                           const SizedBox(height: 2),
                           Text(
                             _isLocating
@@ -242,7 +243,7 @@ class _ObservationScreenState extends State<ObservationScreen> {
 
               // Severity Selector
               Text(
-                'Infestation Severity Level',
+                context.tr('infestation_severity'),
                 style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: context.textMuted),
               ),
               const SizedBox(height: 8),
@@ -252,6 +253,12 @@ class _ObservationScreenState extends State<ObservationScreen> {
                   Color color = s == 'Critical'
                       ? AppTheme.dangerRed
                       : (s == 'High' ? AppTheme.warningAmber : AppTheme.primaryGreen);
+
+                  String label = s;
+                  if (s == 'Mild') label = context.tr('sev_mild');
+                  if (s == 'Moderate') label = context.tr('sev_moderate');
+                  if (s == 'High') label = context.tr('sev_high');
+                  if (s == 'Critical') label = context.tr('sev_critical');
 
                   return Expanded(
                     child: Padding(
@@ -268,7 +275,7 @@ class _ObservationScreenState extends State<ObservationScreen> {
                           ),
                           alignment: Alignment.center,
                           child: Text(
-                            s,
+                            label,
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
@@ -287,9 +294,9 @@ class _ObservationScreenState extends State<ObservationScreen> {
                 initialValue: _selectedWeather,
                 dropdownColor: context.surfaceCard,
                 style: TextStyle(color: context.textPrimary),
-                decoration: const InputDecoration(
-                  labelText: 'Microclimate & Ambient Weather',
-                  prefixIcon: Icon(Icons.wb_sunny_outlined, color: AppTheme.warningAmber),
+                decoration: InputDecoration(
+                  labelText: context.tr('weather_microclimate'),
+                  prefixIcon: const Icon(Icons.wb_sunny_outlined, color: AppTheme.warningAmber),
                 ),
                 items: _weatherOptions.map((w) {
                   return DropdownMenuItem(value: w, child: Text(w));
@@ -302,10 +309,10 @@ class _ObservationScreenState extends State<ObservationScreen> {
                 controller: _symptomsController,
                 maxLines: 2,
                 style: TextStyle(color: context.textPrimary),
-                decoration: const InputDecoration(
-                  labelText: 'Observed Foliar Symptoms',
+                decoration: InputDecoration(
+                  labelText: context.tr('foliar_symptoms'),
                   alignLabelWithHint: true,
-                  prefixIcon: Icon(Icons.coronavirus_outlined),
+                  prefixIcon: const Icon(Icons.coronavirus_outlined),
                 ),
               ),
               const SizedBox(height: 16),
@@ -314,11 +321,11 @@ class _ObservationScreenState extends State<ObservationScreen> {
                 controller: _notesController,
                 maxLines: 3,
                 style: TextStyle(color: context.textPrimary),
-                decoration: const InputDecoration(
-                  labelText: 'Agronomic Field Interventions & Notes',
+                decoration: InputDecoration(
+                  labelText: context.tr('field_notes'),
                   alignLabelWithHint: true,
-                  hintText: 'e.g. Row 12 trimmed. Straw mulch applied. Drip line cleared.',
-                  prefixIcon: Icon(Icons.notes_rounded),
+                  hintText: 'e.g. Row 12 trimmed. Straw mulch applied.',
+                  prefixIcon: const Icon(Icons.notes_rounded),
                 ),
               ),
               const SizedBox(height: 28),
@@ -332,7 +339,7 @@ class _ObservationScreenState extends State<ObservationScreen> {
                         height: 20,
                         child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                       )
-                    : const Text('Save Observation to SQLite'),
+                    : Text(context.tr('save_sqlite')),
               ),
             ],
           ),

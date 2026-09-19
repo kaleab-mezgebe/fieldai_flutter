@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fieldai_flutter/main.dart';
 import 'package:fieldai_flutter/core/theme/theme_service.dart';
 import 'package:fieldai_flutter/core/theme/app_theme.dart';
+import 'package:fieldai_flutter/core/localization/language_service.dart';
+import 'package:fieldai_flutter/core/localization/app_strings.dart';
 import 'package:fieldai_flutter/features/dashboard/presentation/screens/dashboard_screen.dart';
 
 void main() {
@@ -44,5 +46,38 @@ void main() {
     expect(find.text('Analyze Crop Leaf'), findsOneWidget);
     expect(find.text('Ask FieldAI (Agronomic RAG)'), findsOneWidget);
     expect(find.text('Record Field Observation'), findsOneWidget);
+  });
+
+  testWidgets('LanguageService switches across English, Amharic, Tigrinya, and Afaan Oromoo', (WidgetTester tester) async {
+    // English
+    await LanguageService.instance.setLanguage('en');
+    expect(LanguageService.instance.languageCode, 'en');
+    expect(AppStrings.get('app_name'), 'FieldAI');
+    expect(AppStrings.get('analyze_crop'), 'Analyze Crop Leaf');
+
+    // Amharic (አማርኛ)
+    await LanguageService.instance.setLanguage('am');
+    expect(LanguageService.instance.languageCode, 'am');
+    expect(AppStrings.get('app_name'), 'ፊልድ ኤአይ (FieldAI)');
+    expect(AppStrings.get('analyze_crop'), 'የሰብል ቅጠልን መርምር');
+    expect(AppStrings.get('synced'), 'ተመሳስሏል');
+
+    // Tigrinya (ትግርኛ)
+    await LanguageService.instance.setLanguage('ti');
+    expect(LanguageService.instance.languageCode, 'ti');
+    expect(AppStrings.get('app_name'), 'ፊልድ ኤአይ (FieldAI)');
+    expect(AppStrings.get('analyze_crop'), 'ናይ ሰብሊ ቆጽሊ መርምር');
+    expect(AppStrings.get('synced'), 'ተመሳሲሉ');
+
+    // Afaan Oromoo (Oromiffa)
+    await LanguageService.instance.setLanguage('om');
+    expect(LanguageService.instance.languageCode, 'om');
+    expect(AppStrings.get('app_name'), 'FieldAI');
+    expect(AppStrings.get('analyze_crop'), 'Baala Biqilaa Qoradhu');
+    expect(AppStrings.get('synced'), 'Walsimsiifameera');
+
+    // Reset back to English
+    await LanguageService.instance.setLanguage('en');
+    expect(LanguageService.instance.languageCode, 'en');
   });
 }

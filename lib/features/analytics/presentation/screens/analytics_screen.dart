@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:fieldai_flutter/core/theme/app_theme.dart';
 import 'package:fieldai_flutter/core/network/api_client.dart';
 import 'package:fieldai_flutter/core/database/app_database.dart';
+import 'package:fieldai_flutter/core/localization/app_strings.dart';
 
 class AnalyticsScreen extends StatefulWidget {
   const AnalyticsScreen({super.key});
@@ -157,7 +158,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     return Scaffold(
       backgroundColor: context.bgColor,
       appBar: AppBar(
-        title: const Text('Field Analytics & Risk'),
+        title: Text(context.tr('field_analytics')),
         actions: [
           IconButton(
             icon: const Icon(Icons.file_download_outlined),
@@ -202,7 +203,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Outbreak Spore Vulnerability',
+                              context.tr('outbreak_risk'),
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w800,
@@ -269,7 +270,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Recorded Pathogen Prevalence',
+                        context.tr('pathogen_prevalence'),
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w800,
@@ -344,7 +345,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     ),
                     onPressed: _exportFieldData,
                     icon: const Icon(Icons.file_download_rounded),
-                    label: const Text('Export Field Observations & Diagnoses (JSON)'),
+                    label: Text(context.tr('export_json')),
                   ),
                 ],
               ),

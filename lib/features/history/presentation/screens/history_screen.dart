@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fieldai_flutter/core/theme/app_theme.dart';
 import 'package:fieldai_flutter/core/database/app_database.dart';
+import 'package:fieldai_flutter/core/localization/app_strings.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -159,7 +160,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () => Navigator.of(ctx).pop(),
-                  child: const Text('Close Details'),
+                  child: Text(context.tr('close_details')),
                 ),
               ),
               const SizedBox(height: 8),
@@ -177,7 +178,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     return Scaffold(
       backgroundColor: context.bgColor,
       appBar: AppBar(
-        title: const Text('My Diagnoses & Observations'),
+        title: Text(context.tr('my_records')),
       ),
       body: Column(
         children: [
@@ -187,11 +188,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
             color: context.surfaceCard,
             child: Row(
               children: [
-                _buildFilterChip('all', 'All (${_records.length})'),
+                _buildFilterChip('all', '${context.tr('all_filter')} (${_records.length})'),
                 const SizedBox(width: 8),
-                _buildFilterChip('diagnoses', 'Diagnoses (${_records.where((r) => !r['isObservation']).length})'),
+                _buildFilterChip('diagnoses', '${context.tr('diagnoses_filter')} (${_records.where((r) => !r['isObservation']).length})'),
                 const SizedBox(width: 8),
-                _buildFilterChip('observations', 'Observations (${_records.where((r) => r['isObservation']).length})'),
+                _buildFilterChip('observations', '${context.tr('observations_filter')} (${_records.where((r) => r['isObservation']).length})'),
               ],
             ),
           ),

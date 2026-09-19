@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fieldai_flutter/core/theme/app_theme.dart';
 import 'package:fieldai_flutter/core/theme/theme_service.dart';
+import 'package:fieldai_flutter/core/localization/language_service.dart';
+import 'package:fieldai_flutter/core/localization/app_strings.dart';
 import 'package:fieldai_flutter/core/sync/sync_service.dart';
 import 'package:fieldai_flutter/core/database/app_database.dart';
 import 'package:fieldai_flutter/features/disease_analysis/presentation/screens/crop_analysis_screen.dart';
@@ -66,6 +68,93 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
+  void _showLanguageSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: context.surfaceCard,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: context.textMuted.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    context.tr('select_language'),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: context.textPrimary,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.of(ctx).pop(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              ...LanguageService.instance.supportedLanguages.map((lang) {
+                final isSelected = LanguageService.instance.languageCode == lang['code'];
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? AppTheme.primaryGreen.withValues(alpha: context.isDark ? 0.2 : 0.1)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isSelected ? AppTheme.primaryGreen : context.cardBorder,
+                    ),
+                  ),
+                  child: ListTile(
+                    leading: Text(lang['flag']!, style: const TextStyle(fontSize: 24)),
+                    title: Text(
+                      lang['nativeName']!,
+                      style: TextStyle(
+                        fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                        color: isSelected ? AppTheme.primaryGreen : context.textPrimary,
+                      ),
+                    ),
+                    subtitle: Text(
+                      lang['name']!,
+                      style: TextStyle(color: context.textMuted, fontSize: 12),
+                    ),
+                    trailing: isSelected
+                        ? const Icon(Icons.check_circle_rounded, color: AppTheme.primaryGreen)
+                        : null,
+                    onTap: () {
+                      LanguageService.instance.setLanguage(lang['code']!);
+                      Navigator.of(ctx).pop();
+                    },
+                  ),
+                );
+              }),
+              const SizedBox(height: 12),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   void _showSettingsSheet() {
     showModalBottomSheet(
       context: context,
@@ -100,7 +189,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Field System Controls',
+                        context.tr('system_controls'),
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
@@ -114,6 +203,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ],
                   ),
                   const SizedBox(height: 16),
+
+                  // Language selector in settings
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppTheme.infoBlue.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(Icons.language_rounded, color: AppTheme.infoBlue),
+                    ),
+                    title: Text(
+                      context.tr('language'),
+                      style: TextStyle(fontWeight: FontWeight.w700, color: context.textPrimary),
+                    ),
+                    subtitle: Text(
+                      LanguageService.instance.supportedLanguages.firstWhere(
+                        (l) => l['code'] == LanguageService.instance.languageCode,
+                      )['nativeName']!,
+                      style: TextStyle(color: context.textMuted, fontSize: 12),
+                    ),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: () {
+                      Navigator.of(ctx).pop();
+                      _showLanguageSheet();
+                    },
+                  ),
+                  const Divider(),
 
                   // Theme mode toggle
                   ListTile(
@@ -130,11 +248,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                     ),
                     title: Text(
-                      'Appearance Theme',
+                      context.tr('appearance_theme'),
                       style: TextStyle(fontWeight: FontWeight.w700, color: context.textPrimary),
                     ),
                     subtitle: Text(
-                      context.isDark ? 'Dark Mode Active' : 'Light Mode Active',
+                      context.isDark ? 'Dark Mode' : 'Light Mode',
                       style: TextStyle(color: context.textMuted, fontSize: 12),
                     ),
                     trailing: Switch.adaptive(
@@ -163,11 +281,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                     ),
                     title: Text(
-                      'Field Offline Mode',
+                      context.tr('offline_mode'),
                       style: TextStyle(fontWeight: FontWeight.w700, color: context.textPrimary),
                     ),
                     subtitle: Text(
-                      isOffline ? 'Simulating isolated offline field' : 'Connected to cloud network',
+                      isOffline ? 'Offline Field Mode' : 'Connected Mode',
                       style: TextStyle(color: context.textMuted, fontSize: 12),
                     ),
                     trailing: Switch.adaptive(
@@ -187,18 +305,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     leading: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: AppTheme.infoBlue.withValues(alpha: 0.15),
+                        color: AppTheme.primaryGreen.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Icon(Icons.refresh_rounded, color: AppTheme.infoBlue),
+                      child: const Icon(Icons.refresh_rounded, color: AppTheme.primaryGreen),
                     ),
                     title: Text(
-                      'Reload Sample Agronomic Records',
+                      context.tr('reload_records'),
                       style: TextStyle(fontWeight: FontWeight.w700, color: context.textPrimary),
-                    ),
-                    subtitle: Text(
-                      'Populate local SQLite with baseline field data',
-                      style: TextStyle(color: context.textMuted, fontSize: 12),
                     ),
                     onTap: () async {
                       await AppDatabase.instance.clearAllData();
@@ -230,7 +344,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final isDark = context.isDark;
 
     return AnimatedBuilder(
-      animation: SyncService.instance,
+      animation: Listenable.merge([SyncService.instance, LanguageService.instance]),
       builder: (context, _) {
         final pendingSync = SyncService.instance.pendingCount;
         final isSyncing = SyncService.instance.isSyncing;
@@ -253,10 +367,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: const Icon(Icons.eco_rounded, color: Colors.white, size: 18),
                 ),
                 const SizedBox(width: 8),
-                const Text('FieldAI'),
+                Text(context.tr('app_name')),
               ],
             ),
             actions: [
+              // Language Selector Button
+              IconButton(
+                icon: const Icon(Icons.language_rounded, color: AppTheme.infoBlue),
+                tooltip: 'Language / ቋንቋ / Afaan',
+                onPressed: _showLanguageSheet,
+              ),
               // Theme Toggle Button
               IconButton(
                 icon: Icon(
@@ -329,14 +449,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Good day,',
+                            context.tr('good_day'),
                             style: TextStyle(fontSize: 14, color: context.textMuted),
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            'Field Worker #104',
+                            context.tr('field_worker'),
                             style: TextStyle(
-                              fontSize: 20,
+                              fontSize: 19,
                               fontWeight: FontWeight.w800,
                               color: context.textPrimary,
                             ),
@@ -363,7 +483,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             ),
                             const SizedBox(width: 6),
                             Text(
-                              pendingSync > 0 ? '$pendingSync Pending Sync' : 'Synced',
+                              pendingSync > 0
+                                  ? '$pendingSync ${context.tr('pending_sync')}'
+                                  : context.tr('synced'),
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
@@ -399,7 +521,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "Field Operations Summary",
+                              context.tr('field_summary'),
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w700,
@@ -418,11 +540,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            _buildStatColumn('Diagnoses', '$_analysisCount', AppTheme.primaryGreen),
+                            _buildStatColumn(context.tr('diagnoses'), '$_analysisCount', AppTheme.primaryGreen),
                             Container(width: 1, height: 36, color: context.cardBorder),
-                            _buildStatColumn('Observations', '$_observationCount', AppTheme.accentGreen),
+                            _buildStatColumn(context.tr('observations'), '$_observationCount', AppTheme.accentGreen),
                             Container(width: 1, height: 36, color: context.cardBorder),
-                            _buildStatColumn('Pending Sync', '$pendingSync', AppTheme.warningAmber),
+                            _buildStatColumn(context.tr('pending_sync'), '$pendingSync', AppTheme.warningAmber),
                           ],
                         ),
                       ],
@@ -432,7 +554,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                   // Primary Action Cards
                   Text(
-                    'Field Tools & Diagnostics',
+                    context.tr('tools_diagnostics'),
                     style: TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w800,
@@ -443,8 +565,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                   _buildActionButton(
                     context,
-                    title: 'Analyze Crop Leaf',
-                    subtitle: 'Identify leaf diseases & receive instant AI treatment protocols',
+                    title: context.tr('analyze_crop'),
+                    subtitle: context.tr('analyze_crop_sub'),
                     icon: Icons.camera_alt_rounded,
                     color: AppTheme.primaryGreen,
                     onTap: () async {
@@ -458,8 +580,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                   _buildActionButton(
                     context,
-                    title: 'Ask FieldAI (Agronomic RAG)',
-                    subtitle: 'Evidence-based guidance from extension manuals & research',
+                    title: context.tr('ask_ai'),
+                    subtitle: context.tr('ask_ai_sub'),
                     icon: Icons.chat_bubble_outline_rounded,
                     color: AppTheme.infoBlue,
                     onTap: () => Navigator.of(context).push(
@@ -470,8 +592,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                   _buildActionButton(
                     context,
-                    title: 'Record Field Observation',
-                    subtitle: 'Save GPS coordinates, crop symptoms & notes offline',
+                    title: context.tr('record_obs'),
+                    subtitle: context.tr('record_obs_sub'),
                     icon: Icons.edit_note_rounded,
                     color: AppTheme.accentPurple,
                     onTap: () async {
@@ -488,7 +610,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Recent Field Activity',
+                        context.tr('recent_activity'),
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w800,
@@ -502,7 +624,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           );
                           _loadDashboardData();
                         },
-                        child: const Text('View all', style: TextStyle(color: AppTheme.primaryGreen, fontWeight: FontWeight.w700)),
+                        child: Text(
+                          context.tr('view_all'),
+                          style: const TextStyle(color: AppTheme.primaryGreen, fontWeight: FontWeight.w700),
+                        ),
                       ),
                     ],
                   ),
@@ -518,7 +643,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                       child: Center(
                         child: Text(
-                          'No field activity recorded yet. Start by analyzing a crop leaf!',
+                          context.tr('no_activity'),
                           textAlign: TextAlign.center,
                           style: TextStyle(color: context.textMuted, fontSize: 13),
                         ),

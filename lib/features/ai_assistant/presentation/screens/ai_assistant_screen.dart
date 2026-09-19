@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fieldai_flutter/core/theme/app_theme.dart';
 import 'package:fieldai_flutter/core/network/api_client.dart';
+import 'package:fieldai_flutter/core/localization/app_strings.dart';
 
 class ChatMessageItem {
   final String text;
@@ -198,7 +199,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
     return Scaffold(
       backgroundColor: context.bgColor,
       appBar: AppBar(
-        title: const Text('Ask FieldAI Assistant'),
+        title: Text(context.tr('ask_ai')),
       ),
       body: Column(
         children: [
@@ -227,7 +228,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                   ),
                   const SizedBox(width: 10),
                   Text(
-                    'Searching Agricultural Knowledge Base (Offline RAG)...',
+                    context.tr('search_rag'),
                     style: TextStyle(color: context.textMuted, fontSize: 12, fontWeight: FontWeight.w500),
                   ),
                 ],
@@ -273,7 +274,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                     controller: _inputController,
                     style: TextStyle(color: context.textPrimary),
                     decoration: InputDecoration(
-                      hintText: 'Ask an agricultural question...',
+                      hintText: context.tr('chat_hint'),
                       contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
                       filled: true,
                       fillColor: context.inputBg,
@@ -343,7 +344,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                   Icon(Icons.menu_book_rounded, size: 14, color: msg.isUser ? Colors.white : AppTheme.primaryGreen),
                   const SizedBox(width: 6),
                   Text(
-                    'Sources & Extension Manuals:',
+                    context.tr('sources_citations'),
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
