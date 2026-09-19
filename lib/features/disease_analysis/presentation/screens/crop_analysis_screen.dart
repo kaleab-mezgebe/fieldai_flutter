@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:fieldai_flutter/core/theme/app_theme.dart';
 import 'package:fieldai_flutter/core/network/api_client.dart';
 import 'package:fieldai_flutter/core/database/app_database.dart';
+import 'package:fieldai_flutter/core/ai/edge_inference_service.dart';
 import 'package:fieldai_flutter/features/disease_analysis/presentation/screens/ai_explanation_screen.dart';
 import 'package:fieldai_flutter/features/observations/presentation/screens/observation_screen.dart';
 
@@ -198,26 +199,10 @@ class _CropAnalysisScreenState extends State<CropAnalysisScreen> {
             });
           }
         } catch (_) {
-          // Edge AI heuristic fallback
-          await Future.delayed(const Duration(milliseconds: 700));
+          // On-Device Edge AI inference
+          final edgeResult = await EdgeInferenceService.instance.analyzeLeafImage(_imageBytes!);
           setState(() {
-            _predictionResult = {
-              'crop': 'Tomato',
-              'condition_class': 'Tomato___Early_blight',
-              'condition_name': 'Early Blight (Alternaria solani)',
-              'confidence': 88.0,
-              'severity': 'Moderate',
-              'status': 'Action Recommended',
-              'explanation': 'Edge neural analysis identified circular target spots with chlorotic yellow haloes characteristic of Alternaria solani.',
-              'pathogen_info': 'Alternaria solani fungal spores detected.',
-              'conducive_factors': 'Warm humid microclimate.',
-              'recommended_actions': [
-                'Prune lower yellowing leaves.',
-                'Switch from overhead sprinkler to drip irrigation.',
-                'Apply Copper fungicide spray.'
-              ],
-              'safety_disclaimer': 'Offline edge prediction active.'
-            };
+            _predictionResult = edgeResult.toMap();
           });
         }
       }
