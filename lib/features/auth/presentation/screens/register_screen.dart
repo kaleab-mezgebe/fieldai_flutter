@@ -17,7 +17,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _orgController = TextEditingController(text: 'Ethiopian Agricultural Extension Directorate');
+  final _orgController = TextEditingController(text: 'Agricultural Extension Directorate');
   String _selectedRole = 'field_worker';
   bool _isLoading = false;
   String? _errorMessage;
@@ -80,7 +80,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.darkBackground,
+      backgroundColor: context.bgColor,
       appBar: AppBar(
         title: const Text('Create Account'),
       ),
@@ -92,18 +92,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
+                Text(
                   'Join FieldAI Platform',
                   style: TextStyle(
                     fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: AppTheme.textLight,
+                    fontWeight: FontWeight.w800,
+                    color: context.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 6),
-                const Text(
+                Text(
                   'Enable local AI disease detection and synchronized agricultural reporting',
-                  style: TextStyle(fontSize: 13, color: AppTheme.textMuted),
+                  style: TextStyle(fontSize: 13, color: context.textMuted),
                 ),
                 const SizedBox(height: 24),
 
@@ -112,7 +112,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     padding: const EdgeInsets.all(12),
                     margin: const EdgeInsets.only(bottom: 16),
                     decoration: BoxDecoration(
-                      color: AppTheme.dangerRed.withOpacity(0.1),
+                      color: AppTheme.dangerRed.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: AppTheme.dangerRed),
                     ),
@@ -121,10 +121,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 TextFormField(
                   controller: _nameController,
-                  style: const TextStyle(color: AppTheme.textLight),
+                  style: TextStyle(color: context.textPrimary),
                   decoration: const InputDecoration(
                     labelText: 'Full Name',
-                    prefixIcon: Icon(Icons.person_outline, color: AppTheme.textMuted),
+                    prefixIcon: Icon(Icons.person_outline),
                   ),
                   validator: (val) => val == null || val.isEmpty ? 'Please enter your name' : null,
                 ),
@@ -133,10 +133,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  style: const TextStyle(color: AppTheme.textLight),
+                  style: TextStyle(color: context.textPrimary),
                   decoration: const InputDecoration(
                     labelText: 'Email Address',
-                    prefixIcon: Icon(Icons.email_outlined, color: AppTheme.textMuted),
+                    prefixIcon: Icon(Icons.email_outlined),
                   ),
                   validator: (val) => val == null || !val.contains('@') ? 'Enter a valid email' : null,
                 ),
@@ -145,10 +145,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 TextFormField(
                   controller: _passwordController,
                   obscureText: true,
-                  style: const TextStyle(color: AppTheme.textLight),
+                  style: TextStyle(color: context.textPrimary),
                   decoration: const InputDecoration(
                     labelText: 'Password',
-                    prefixIcon: Icon(Icons.lock_outline, color: AppTheme.textMuted),
+                    prefixIcon: Icon(Icons.lock_outline),
                   ),
                   validator: (val) => val == null || val.length < 6 ? 'Password must be at least 6 characters' : null,
                 ),
@@ -156,21 +156,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 TextFormField(
                   controller: _orgController,
-                  style: const TextStyle(color: AppTheme.textLight),
+                  style: TextStyle(color: context.textPrimary),
                   decoration: const InputDecoration(
                     labelText: 'Organization / Cooperative',
-                    prefixIcon: Icon(Icons.business_outlined, color: AppTheme.textMuted),
+                    prefixIcon: Icon(Icons.business_outlined),
                   ),
                 ),
                 const SizedBox(height: 16),
 
                 DropdownButtonFormField<String>(
-                  value: _selectedRole,
-                  dropdownColor: AppTheme.surfaceCard,
-                  style: const TextStyle(color: AppTheme.textLight),
+                  initialValue: _selectedRole,
+                  dropdownColor: context.surfaceCard,
+                  style: TextStyle(color: context.textPrimary),
                   decoration: const InputDecoration(
                     labelText: 'Role',
-                    prefixIcon: Icon(Icons.badge_outlined, color: AppTheme.accentGreen),
+                    prefixIcon: Icon(Icons.badge_outlined, color: AppTheme.primaryGreen),
                   ),
                   items: _roles.map((r) {
                     return DropdownMenuItem(value: r['id'], child: Text(r['label']!));
@@ -194,12 +194,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('Already have an account? ', style: TextStyle(color: AppTheme.textMuted)),
+                    Text('Already have an account? ', style: TextStyle(color: context.textMuted)),
                     GestureDetector(
                       onTap: () => Navigator.of(context).pop(),
                       child: const Text(
                         'Sign In',
-                        style: TextStyle(color: AppTheme.accentGreen, fontWeight: FontWeight.bold),
+                        style: TextStyle(color: AppTheme.primaryGreen, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],

@@ -27,10 +27,27 @@ class _ObservationScreenState extends State<ObservationScreen> {
   late TextEditingController _symptomsController;
   late TextEditingController _notesController;
   String _selectedWeather = 'Humid & Sunny (28°C)';
-  double? _latitude = 9.0300;
-  double? _longitude = 38.7400;
+  String _selectedSeverity = 'Moderate';
+  double? _latitude = 8.5412;
+  double? _longitude = 39.2689;
   bool _isLocating = false;
   bool _isSaving = false;
+
+  final List<String> _commonCrops = [
+    'Tomato',
+    'Maize',
+    'Potato',
+    'Wheat',
+    'Coffee',
+    'Pepper'
+  ];
+
+  final List<String> _severities = [
+    'Mild',
+    'Moderate',
+    'High',
+    'Critical'
+  ];
 
   final List<String> _weatherOptions = [
     'Humid & Sunny (28°C)',
@@ -45,7 +62,7 @@ class _ObservationScreenState extends State<ObservationScreen> {
     _cropController = TextEditingController(text: widget.prefilledCrop ?? 'Tomato');
     _symptomsController = TextEditingController(
       text: widget.prefilledDisease != null
-          ? 'Concentric target rings observed on lower leaf surface.'
+          ? 'Concentric target lesions identified on lower foliar canopy.'
           : '',
     );
     _notesController = TextEditingController();
@@ -65,16 +82,20 @@ class _ObservationScreenState extends State<ObservationScreen> {
           desiredAccuracy: LocationAccuracy.medium,
           timeLimit: const Duration(seconds: 4),
         );
-        setState(() {
-          _latitude = position.latitude;
-          _longitude = position.longitude;
-        });
+        if (mounted) {
+          setState(() {
+            _latitude = position.latitude;
+            _longitude = position.longitude;
+          });
+        }
       }
     } catch (_) {
-      setState(() {
-        _latitude = 9.0320;
-        _longitude = 38.7480;
-      });
+      if (mounted) {
+        setState(() {
+          _latitude = 8.5412;
+          _longitude = 39.2689;
+        });
+      }
     } finally {
       if (mounted) setState(() => _isLocating = false);
     }
@@ -84,18 +105,18 @@ class _ObservationScreenState extends State<ObservationScreen> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isSaving = true);
 
-    final clientId = const Uuid().v4();
+    final clientId = 'obs_${DateTime.now().millisecondsSinceEpoch}_${const Uuid().v4().substring(0, 8)}';
     final newObservation = {
       'client_id': clientId,
       'crop': _cropController.text.trim(),
       'symptoms': _symptomsController.text.trim(),
-      'weather_condition': _selectedWeather,
+      'weather_condition': '$_selectedWeather | Severity: $_selectedSeverity',
       'notes': _notesController.text.trim(),
       'latitude': _latitude,
       'longitude': _longitude,
       'predicted_disease': widget.prefilledDisease ?? 'Early Blight',
-      'confidence': widget.prefilledConfidence ?? 87.0,
-      'image_path': 'local_storage/leaf_${DateTime.now().millisecondsSinceEpoch}.jpg',
+      'confidence': widget.prefilledConfidence ?? 88.0,
+      'image_path': 'local_storage/obs_${DateTime.now().millisecondsSinceEpoch}.jpg',
       'created_at': DateTime.now().toIso8601String(),
       'sync_status': 'pending',
     };
@@ -109,18 +130,18 @@ class _ObservationScreenState extends State<ObservationScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppTheme.surfaceCard,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Row(
-          children: const [
-            Icon(Icons.check_circle_rounded, color: AppTheme.accentGreen),
+        backgroundColor: context.surfaceCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        title: const Row(
+          children: [
+            Icon(Icons.check_circle_rounded, color: AppTheme.primaryGreen),
             SizedBox(width: 8),
-            Text('Saved Locally', style: TextStyle(color: AppTheme.textLight, fontSize: 18)),
+            Text('Saved to SQLite', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           ],
         ),
-        content: const Text(
-          'Observation saved securely to local SQLite database.\n\nWill automatically synchronize when internet connection becomes available.',
-          style: TextStyle(color: AppTheme.textMuted, fontSize: 14),
+        content: Text(
+          'Field observation recorded successfully to on-device database.\n\nPending queue updated and ready for cloud synchronization.',
+          style: TextStyle(color: context.textMuted, fontSize: 13, height: 1.4),
         ),
         actions: [
           ElevatedButton(
@@ -128,7 +149,7 @@ class _ObservationScreenState extends State<ObservationScreen> {
               Navigator.of(ctx).pop();
               Navigator.of(context).pop();
             },
-            child: const Text('OK'),
+            child: const Text('Return to Dashboard'),
           ),
         ],
       ),
@@ -138,7 +159,7 @@ class _ObservationScreenState extends State<ObservationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.darkBackground,
+      backgroundColor: context.bgColor,
       appBar: AppBar(
         title: const Text('Record Field Observation'),
       ),
@@ -149,23 +170,47 @@ class _ObservationScreenState extends State<ObservationScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // Crop Quick Chips
+              Text(
+                'Target Crop',
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: context.textMuted),
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                children: _commonCrops.map((c) {
+                  final isSelected = _cropController.text == c;
+                  return ChoiceChip(
+                    label: Text(c, style: TextStyle(fontSize: 12, color: isSelected ? Colors.white : context.textPrimary)),
+                    selected: isSelected,
+                    selectedColor: AppTheme.primaryGreen,
+                    backgroundColor: context.surfaceCard,
+                    onSelected: (val) {
+                      if (val) setState(() => _cropController.text = c);
+                    },
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 14),
+
               TextFormField(
                 controller: _cropController,
-                style: const TextStyle(color: AppTheme.textLight),
+                style: TextStyle(color: context.textPrimary),
                 decoration: const InputDecoration(
-                  labelText: 'Crop',
-                  prefixIcon: Icon(Icons.eco_outlined, color: AppTheme.accentGreen),
+                  labelText: 'Crop Species / Variety',
+                  prefixIcon: Icon(Icons.eco_outlined, color: AppTheme.primaryGreen),
                 ),
                 validator: (val) => val == null || val.isEmpty ? 'Please enter crop name' : null,
               ),
               const SizedBox(height: 16),
 
+              // GPS Location Card
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: AppTheme.surfaceCard,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppTheme.cardBorder),
+                  color: context.surfaceCard,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: context.cardBorder),
                 ),
                 child: Row(
                   children: [
@@ -175,19 +220,19 @@ class _ObservationScreenState extends State<ObservationScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('GPS Coordinates', style: TextStyle(fontSize: 12, color: AppTheme.textMuted)),
+                          Text('GPS Field Coordinates', style: TextStyle(fontSize: 12, color: context.textMuted)),
                           const SizedBox(height: 2),
                           Text(
                             _isLocating
                                 ? 'Acquiring GPS fix...'
                                 : 'Lat: ${_latitude?.toStringAsFixed(4)}, Lon: ${_longitude?.toStringAsFixed(4)}',
-                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.textLight),
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: context.textPrimary),
                           ),
                         ],
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.my_location_rounded, color: AppTheme.accentGreen, size: 20),
+                      icon: const Icon(Icons.my_location_rounded, color: AppTheme.primaryGreen, size: 20),
                       onPressed: _fetchLocation,
                     ),
                   ],
@@ -195,12 +240,55 @@ class _ObservationScreenState extends State<ObservationScreen> {
               ),
               const SizedBox(height: 16),
 
+              // Severity Selector
+              Text(
+                'Infestation Severity Level',
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: context.textMuted),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: _severities.map((s) {
+                  final isSelected = _selectedSeverity == s;
+                  Color color = s == 'Critical'
+                      ? AppTheme.dangerRed
+                      : (s == 'High' ? AppTheme.warningAmber : AppTheme.primaryGreen);
+
+                  return Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: InkWell(
+                        onTap: () => setState(() => _selectedSeverity = s),
+                        borderRadius: BorderRadius.circular(10),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: isSelected ? color : context.surfaceCard,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: isSelected ? color : context.cardBorder),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            s,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: isSelected ? Colors.white : context.textPrimary,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 16),
+
               DropdownButtonFormField<String>(
-                value: _selectedWeather,
-                dropdownColor: AppTheme.surfaceCard,
-                style: const TextStyle(color: AppTheme.textLight),
+                initialValue: _selectedWeather,
+                dropdownColor: context.surfaceCard,
+                style: TextStyle(color: context.textPrimary),
                 decoration: const InputDecoration(
-                  labelText: 'Weather & Microclimate',
+                  labelText: 'Microclimate & Ambient Weather',
                   prefixIcon: Icon(Icons.wb_sunny_outlined, color: AppTheme.warningAmber),
                 ),
                 items: _weatherOptions.map((w) {
@@ -213,11 +301,11 @@ class _ObservationScreenState extends State<ObservationScreen> {
               TextFormField(
                 controller: _symptomsController,
                 maxLines: 2,
-                style: const TextStyle(color: AppTheme.textLight),
+                style: TextStyle(color: context.textPrimary),
                 decoration: const InputDecoration(
                   labelText: 'Observed Foliar Symptoms',
                   alignLabelWithHint: true,
-                  prefixIcon: Icon(Icons.coronavirus_outlined, color: AppTheme.textMuted),
+                  prefixIcon: Icon(Icons.coronavirus_outlined),
                 ),
               ),
               const SizedBox(height: 16),
@@ -225,12 +313,12 @@ class _ObservationScreenState extends State<ObservationScreen> {
               TextFormField(
                 controller: _notesController,
                 maxLines: 3,
-                style: const TextStyle(color: AppTheme.textLight),
+                style: TextStyle(color: context.textPrimary),
                 decoration: const InputDecoration(
-                  labelText: 'Field Notes & Agronomic Interventions',
+                  labelText: 'Agronomic Field Interventions & Notes',
                   alignLabelWithHint: true,
-                  hintText: 'e.g. Row 4 lower foliage trimmed. Mulched with straw.',
-                  prefixIcon: Icon(Icons.notes_rounded, color: AppTheme.textMuted),
+                  hintText: 'e.g. Row 12 trimmed. Straw mulch applied. Drip line cleared.',
+                  prefixIcon: Icon(Icons.notes_rounded),
                 ),
               ),
               const SizedBox(height: 28),
@@ -244,7 +332,7 @@ class _ObservationScreenState extends State<ObservationScreen> {
                         height: 20,
                         child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                       )
-                    : const Text('Save Observation (Offline)'),
+                    : const Text('Save Observation to SQLite'),
               ),
             ],
           ),
