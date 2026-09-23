@@ -114,7 +114,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      item['sync_status'] == 'pending' ? 'Pending' : 'Synced',
+                      item['sync_status'] == 'pending' ? context.tr('pending_sync') : context.tr('synced'),
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
@@ -126,14 +126,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ),
               const SizedBox(height: 14),
               Text(
-                'Recorded Date: ${item['date']}',
+                '${context.tr('recorded_date')}: ${item['date']}',
                 style: TextStyle(fontSize: 12, color: context.textMuted),
               ),
               const SizedBox(height: 12),
               Divider(color: context.cardBorder),
               const SizedBox(height: 8),
               Text(
-                'Details & Field Observations:',
+                context.tr('details_field_obs'),
                 style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: context.textPrimary),
               ),
               const SizedBox(height: 4),
@@ -204,7 +204,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 : filtered.isEmpty
                     ? Center(
                         child: Text(
-                          'No records found in this category.',
+                          context.tr('no_records_category'),
                           style: TextStyle(color: context.textMuted, fontSize: 14),
                         ),
                       )
@@ -288,7 +288,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                           borderRadius: BorderRadius.circular(6),
                                         ),
                                         child: Text(
-                                          isPending ? 'Pending' : 'Synced',
+                                          isPending ? context.tr('pending_sync') : context.tr('synced'),
                                           style: TextStyle(
                                             fontSize: 10,
                                             fontWeight: FontWeight.bold,

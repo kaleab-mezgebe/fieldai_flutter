@@ -86,6 +86,10 @@ class AppStrings {
       'conducive_climate': 'Conducive Weather Microclimate',
       'ipm_interventions': 'Integrated Pest Management (IPM) Interventions',
       'ai_disclaimer': 'AI predictions are evidence-based tools designed to assist field scouting.',
+      'total_records': 'Total Records',
+      'recorded_date': 'Recorded Date',
+      'details_field_obs': 'Details & Field Observations',
+      'no_records_category': 'No records found in this category.',
     },
 
     // --- Amharic (አማርኛ) ---
@@ -171,6 +175,10 @@ class AppStrings {
       'conducive_climate': 'ለበሽታው አመቺ የአየር ሁኔታ',
       'ipm_interventions': 'የተቀናጀ የተባይና የበሽታ መከላከያ እርምጃዎች (IPM)',
       'ai_disclaimer': 'የኤአይ ትንበያዎች የመስክ ባለሙያዎችን ለመርዳት የተዘጋጁ ናቸው።',
+      'total_records': 'አጠቃላይ መረጃዎች',
+      'recorded_date': 'የተመዘገበበት ቀን',
+      'details_field_obs': 'ዝርዝር መረጃና የመስክ ምልከታዎች',
+      'no_records_category': 'በዚህ ዘርፍ ምንም የተመዘገበ መረጃ አልተገኘም።',
     },
 
     // --- Tigrinya (ትግርኛ) ---
@@ -256,6 +264,10 @@ class AppStrings {
       'conducive_climate': 'ንሕማም ምቹእ ኩነታት ኣየር',
       'ipm_interventions': 'ዝተዋደደ ምክልኻል ሓሳኹን ሕማማትን (IPM)',
       'ai_disclaimer': 'ናይ ኤአይ ትንበያታት ንናይ መሮር ሰራሕተኛታት ንምሕጋዝ ዝተዳለዉ እዮም።',
+      'total_records': 'ሓፈሻዊ መረዳእታታት',
+      'recorded_date': 'ዝተመዝገበሉ ዕለት',
+      'details_field_obs': 'ዝርዝር ሓበሬታን ናይ መሮር ትዕዝብትታትን',
+      'no_records_category': 'ኣብዚ ክፍሊ ዝተረኽበ መረዳእታ የለን።',
     },
 
     // --- Afaan Oromoo (Oromiffa) ---
@@ -341,6 +353,10 @@ class AppStrings {
       'conducive_climate': 'Haala Qilleensa Dhibeef Mijataa',
       'ipm_interventions': 'Tarkaanfiiwwan To\'annoo Dhibee fi Handooqaa (IPM)',
       'ai_disclaimer': 'Tilmaamni AI hojjettoota dirree gargaaruuf kan qophaa\'edha.',
+      'total_records': 'Waliigala Deetaa',
+      'recorded_date': 'Guyyaa Galmaa\'e',
+      'details_field_obs': 'Bal\'ina fi Hubannoowwan Dirree',
+      'no_records_category': 'Kutaa kana keessatti deetaan hin argamne.',
     },
   };
 
