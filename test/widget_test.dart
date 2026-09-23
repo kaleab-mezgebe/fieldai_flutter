@@ -7,6 +7,7 @@ import 'package:fieldai_flutter/core/theme/app_theme.dart';
 import 'package:fieldai_flutter/core/localization/language_service.dart';
 import 'package:fieldai_flutter/core/localization/app_strings.dart';
 import 'package:fieldai_flutter/features/dashboard/presentation/screens/dashboard_screen.dart';
+import 'package:fieldai_flutter/features/auth/presentation/screens/register_screen.dart';
 
 void main() {
   setUp(() {
@@ -79,5 +80,23 @@ void main() {
     // Reset back to English
     await LanguageService.instance.setLanguage('en');
     expect(LanguageService.instance.languageCode, 'en');
+  });
+
+  testWidgets('RegisterScreen renders properly with localized form elements', (WidgetTester tester) async {
+    await LanguageService.instance.setLanguage('en');
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.darkTheme,
+        home: const RegisterScreen(),
+      ),
+    );
+
+    expect(find.text('Create Account'), findsWidgets);
+    expect(find.text('Join FieldAI Platform'), findsOneWidget);
+    expect(find.text('Full Name'), findsOneWidget);
+    expect(find.text('Email Address'), findsOneWidget);
+    expect(find.text('Password'), findsOneWidget);
+    expect(find.text('Organization / Cooperative'), findsOneWidget);
+    expect(find.text('Role'), findsOneWidget);
   });
 }

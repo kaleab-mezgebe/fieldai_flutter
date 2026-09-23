@@ -87,11 +87,11 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: context.surfaceCard,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.download_done_rounded, color: AppTheme.primaryGreen),
-            SizedBox(width: 8),
-            Text('Field Data Archive', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Icon(Icons.download_done_rounded, color: AppTheme.primaryGreen),
+            const SizedBox(width: 8),
+            Text(context.tr('field_data_archive'), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           ],
         ),
         content: SizedBox(
@@ -101,7 +101,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Archive includes ${observations.length} field observations and ${predictions.length} AI diagnoses from local SQLite storage.',
+                '${observations.length} observations • ${predictions.length} diagnoses (SQLite)',
                 style: TextStyle(color: context.textMuted, fontSize: 13),
               ),
               const SizedBox(height: 14),
@@ -130,12 +130,12 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         actions: [
           TextButton.icon(
             icon: const Icon(Icons.copy_rounded, size: 16),
-            label: const Text('Copy JSON'),
+            label: Text(context.tr('copy_json')),
             onPressed: () {
               Clipboard.setData(ClipboardData(text: jsonString));
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Field data copied to clipboard'),
+                SnackBar(
+                  content: Text(context.tr('copied_clipboard')),
                   backgroundColor: AppTheme.primaryGreen,
                 ),
               );
@@ -144,7 +144,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Done'),
+            child: Text(context.tr('done')),
           ),
         ],
       ),
@@ -239,7 +239,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                             Padding(
                               padding: const EdgeInsets.only(bottom: 6),
                               child: Text(
-                                'Risk of spore proliferation in region',
+                                context.tr('risk_spore_sub'),
                                 style: TextStyle(color: context.textMuted, fontSize: 13),
                               ),
                             ),
@@ -257,7 +257,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                         ),
                         const SizedBox(height: 14),
                         Text(
-                          'Driving Factors: High relative humidity (84%) combined with persistent 18-24°C microclimate favors Alternaria & Phytophthora spore dispersal.',
+                          context.tr('driving_factors'),
                           style: TextStyle(fontSize: 12, height: 1.4, color: context.textMuted),
                         ),
                       ],

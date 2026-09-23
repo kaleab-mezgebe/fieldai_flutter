@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fieldai_flutter/core/constants/app_constants.dart';
 import 'package:fieldai_flutter/core/network/api_client.dart';
 import 'package:fieldai_flutter/core/theme/app_theme.dart';
+import 'package:fieldai_flutter/core/localization/app_strings.dart';
 import 'package:fieldai_flutter/features/dashboard/presentation/screens/dashboard_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -22,11 +23,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isLoading = false;
   String? _errorMessage;
 
-  final List<Map<String, String>> _roles = [
-    {'id': 'field_worker', 'label': 'Field Worker / Extension Officer'},
-    {'id': 'farmer', 'label': 'Farmer / Producer'},
-    {'id': 'researcher', 'label': 'Agronomic Researcher'},
-  ];
+  List<Map<String, String>> _getRoles(BuildContext context) {
+    return [
+      {'id': 'field_worker', 'label': context.tr('role_field_worker')},
+      {'id': 'farmer', 'label': context.tr('role_farmer')},
+      {'id': 'researcher', 'label': context.tr('role_researcher')},
+    ];
+  }
 
   Future<void> _handleRegister() async {
     if (!_formKey.currentState!.validate()) return;
@@ -62,8 +65,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Account registered locally in SQLite for offline field use.'),
+        SnackBar(
+          content: Text(context.tr('registered_offline_msg')),
           backgroundColor: AppTheme.accentGreen,
         ),
       );
@@ -79,10 +82,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final roles = _getRoles(context);
+
     return Scaffold(
       backgroundColor: context.bgColor,
       appBar: AppBar(
-        title: const Text('Create Account'),
+        title: Text(context.tr('create_account')),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -93,7 +98,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  'Join FieldAI Platform',
+                  context.tr('join_fieldai'),
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
@@ -102,7 +107,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Enable local AI disease detection and synchronized agricultural reporting',
+                  context.tr('join_fieldai_sub'),
                   style: TextStyle(fontSize: 13, color: context.textMuted),
                 ),
                 const SizedBox(height: 24),
@@ -122,11 +127,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 TextFormField(
                   controller: _nameController,
                   style: TextStyle(color: context.textPrimary),
-                  decoration: const InputDecoration(
-                    labelText: 'Full Name',
-                    prefixIcon: Icon(Icons.person_outline),
+                  decoration: InputDecoration(
+                    labelText: context.tr('full_name'),
+                    prefixIcon: const Icon(Icons.person_outline),
                   ),
-                  validator: (val) => val == null || val.isEmpty ? 'Please enter your name' : null,
+                  validator: (val) => val == null || val.isEmpty ? context.tr('enter_name_val') : null,
                 ),
                 const SizedBox(height: 16),
 
@@ -134,11 +139,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   style: TextStyle(color: context.textPrimary),
-                  decoration: const InputDecoration(
-                    labelText: 'Email Address',
-                    prefixIcon: Icon(Icons.email_outlined),
+                  decoration: InputDecoration(
+                    labelText: context.tr('email'),
+                    prefixIcon: const Icon(Icons.email_outlined),
                   ),
-                  validator: (val) => val == null || !val.contains('@') ? 'Enter a valid email' : null,
+                  validator: (val) => val == null || !val.contains('@') ? context.tr('enter_email_val') : null,
                 ),
                 const SizedBox(height: 16),
 
@@ -146,20 +151,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   controller: _passwordController,
                   obscureText: true,
                   style: TextStyle(color: context.textPrimary),
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                    prefixIcon: Icon(Icons.lock_outline),
+                  decoration: InputDecoration(
+                    labelText: context.tr('password'),
+                    prefixIcon: const Icon(Icons.lock_outline),
                   ),
-                  validator: (val) => val == null || val.length < 6 ? 'Password must be at least 6 characters' : null,
+                  validator: (val) => val == null || val.length < 6 ? context.tr('enter_password_val') : null,
                 ),
                 const SizedBox(height: 16),
 
                 TextFormField(
                   controller: _orgController,
                   style: TextStyle(color: context.textPrimary),
-                  decoration: const InputDecoration(
-                    labelText: 'Organization / Cooperative',
-                    prefixIcon: Icon(Icons.business_outlined),
+                  decoration: InputDecoration(
+                    labelText: context.tr('organization'),
+                    prefixIcon: const Icon(Icons.business_outlined),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -168,11 +173,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   initialValue: _selectedRole,
                   dropdownColor: context.surfaceCard,
                   style: TextStyle(color: context.textPrimary),
-                  decoration: const InputDecoration(
-                    labelText: 'Role',
-                    prefixIcon: Icon(Icons.badge_outlined, color: AppTheme.primaryGreen),
+                  decoration: InputDecoration(
+                    labelText: context.tr('role'),
+                    prefixIcon: const Icon(Icons.badge_outlined, color: AppTheme.primaryGreen),
                   ),
-                  items: _roles.map((r) {
+                  items: roles.map((r) {
                     return DropdownMenuItem(value: r['id'], child: Text(r['label']!));
                   }).toList(),
                   onChanged: (val) => setState(() => _selectedRole = val!),
@@ -187,19 +192,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           height: 20,
                           child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                         )
-                      : const Text('Create Account'),
+                      : Text(context.tr('create_account')),
                 ),
                 const SizedBox(height: 16),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Already have an account? ', style: TextStyle(color: context.textMuted)),
+                    Text(context.tr('already_have_account'), style: TextStyle(color: context.textMuted)),
                     GestureDetector(
                       onTap: () => Navigator.of(context).pop(),
-                      child: const Text(
-                        'Sign In',
-                        style: TextStyle(color: AppTheme.primaryGreen, fontWeight: FontWeight.bold),
+                      child: Text(
+                        context.tr('sign_in_link'),
+                        style: const TextStyle(color: AppTheme.primaryGreen, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
@@ -212,3 +217,4 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 }
+

@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fieldai_flutter/core/constants/app_constants.dart';
 import 'package:fieldai_flutter/core/theme/app_theme.dart';
 import 'package:fieldai_flutter/core/database/app_database.dart';
+import 'package:fieldai_flutter/core/localization/app_strings.dart';
 import 'package:fieldai_flutter/features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'package:fieldai_flutter/features/auth/presentation/screens/login_screen.dart';
 
@@ -113,7 +114,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'AI-Powered Offline Agricultural Assistant',
+                  context.tr('app_tagline'),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,
