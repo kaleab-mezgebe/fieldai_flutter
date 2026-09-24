@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fieldai_flutter/core/theme/app_theme.dart';
 import 'package:fieldai_flutter/core/database/app_database.dart';
 import 'package:fieldai_flutter/core/localization/app_strings.dart';
+import 'package:fieldai_flutter/features/treatment/presentation/screens/treatment_plan_screen.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -13,7 +14,7 @@ class HistoryScreen extends StatefulWidget {
 class _HistoryScreenState extends State<HistoryScreen> {
   List<Map<String, dynamic>> _records = [];
   bool _isLoading = true;
-  String _filter = 'all'; // all, diagnoses, observations
+  String _filter = 'all'; // all, diagnoses, observations, treatments
 
   @override
   void initState() {
@@ -24,6 +25,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   Future<void> _loadHistory() async {
     final predictions = await AppDatabase.instance.getAllPredictions();
     final observations = await AppDatabase.instance.getAllObservations();
+    final plans = await AppDatabase.instance.getAllTreatmentPlans();
 
     List<Map<String, dynamic>> combined = [];
 
@@ -36,6 +38,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         'actions': p['recommended_actions'] ?? '',
         'date': p['created_at'] != null ? p['created_at'].toString().split('T').first : 'Recent',
         'isObservation': false,
+        'isTreatment': false,
         'sync_status': p['sync_status'] ?? 'synced',
         'crop': p['crop'],
       });
@@ -50,8 +53,26 @@ class _HistoryScreenState extends State<HistoryScreen> {
         'actions': 'GPS: ${o['latitude'] ?? ''}, ${o['longitude'] ?? ''}',
         'date': o['created_at'] != null ? o['created_at'].toString().split('T').first : 'Recent',
         'isObservation': true,
+        'isTreatment': false,
         'sync_status': o['sync_status'] ?? 'pending',
         'crop': o['crop'],
+      });
+    }
+
+    for (var t in plans) {
+      final completed = (t['completed_phases']?.toString() ?? '').split(',').where((s) => s.isNotEmpty).length;
+      combined.add({
+        'id': t['plan_id'] ?? '${t['id']}',
+        'title': '${t['crop']} — ${t['disease_name']}',
+        'subtitle': 'Treatment Plan • $completed milestones completed',
+        'details': '${t['field_name'] ?? 'Plot'} (${(t['field_size_m2'] as num?)?.toInt() ?? 500} m²)\n${t['dosage_summary'] ?? ''}',
+        'actions': t['notes'] ?? '',
+        'date': t['created_at'] != null ? t['created_at'].toString().split('T').first : 'Recent',
+        'isObservation': false,
+        'isTreatment': true,
+        'sync_status': t['sync_status'] ?? 'pending',
+        'crop': t['crop'],
+        'disease_name': t['disease_name'],
       });
     }
 
@@ -64,9 +85,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   List<Map<String, dynamic>> get _filteredRecords {
     if (_filter == 'diagnoses') {
-      return _records.where((r) => r['isObservation'] == false).toList();
+      return _records.where((r) => r['isObservation'] == false && r['isTreatment'] == false).toList();
     } else if (_filter == 'observations') {
       return _records.where((r) => r['isObservation'] == true).toList();
+    } else if (_filter == 'treatments') {
+      return _records.where((r) => r['isTreatment'] == true).toList();
     }
     return _records;
   }
@@ -186,14 +209,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             color: context.surfaceCard,
-            child: Row(
-              children: [
-                _buildFilterChip('all', '${context.tr('all_filter')} (${_records.length})'),
-                const SizedBox(width: 8),
-                _buildFilterChip('diagnoses', '${context.tr('diagnoses_filter')} (${_records.where((r) => !r['isObservation']).length})'),
-                const SizedBox(width: 8),
-                _buildFilterChip('observations', '${context.tr('observations_filter')} (${_records.where((r) => r['isObservation']).length})'),
-              ],
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _buildFilterChip('all', '${context.tr('all_filter')} (${_records.length})'),
+                  const SizedBox(width: 8),
+                  _buildFilterChip('diagnoses', '${context.tr('diagnoses_filter')} (${_records.where((r) => !r['isObservation'] && !r['isTreatment']).length})'),
+                  const SizedBox(width: 8),
+                  _buildFilterChip('observations', '${context.tr('observations_filter')} (${_records.where((r) => r['isObservation']).length})'),
+                  const SizedBox(width: 8),
+                  _buildFilterChip('treatments', '${context.tr('treatment_plans_header')} (${_records.where((r) => r['isTreatment']).length})'),
+                ],
+              ),
             ),
           ),
           const Divider(color: AppTheme.primaryGreen, height: 1),
@@ -214,9 +242,32 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         itemBuilder: (context, index) {
                           final item = filtered[index];
                           final isPending = item['sync_status'] == 'pending';
+                          final isTreatment = item['isTreatment'] == true;
+                          final isObs = item['isObservation'] == true;
+
+                          Color iconBg = isTreatment
+                              ? AppTheme.infoBlue
+                              : (isObs ? AppTheme.accentPurple : AppTheme.primaryGreen);
+                          IconData iconData = isTreatment
+                              ? Icons.healing_rounded
+                              : (isObs ? Icons.edit_note_rounded : Icons.biotech_rounded);
 
                           return InkWell(
-                            onTap: () => _showItemDetails(item),
+                            onTap: () {
+                              if (isTreatment) {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => TreatmentPlanScreen(
+                                      crop: item['crop'] ?? 'Tomato',
+                                      diseaseName: item['disease_name'] ?? 'Early Blight',
+                                      existingPlanId: item['id'],
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                _showItemDetails(item);
+                              }
+                            },
                             borderRadius: BorderRadius.circular(14),
                             child: Container(
                               margin: const EdgeInsets.only(bottom: 12),
@@ -232,19 +283,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                     width: 44,
                                     height: 44,
                                     decoration: BoxDecoration(
-                                      color: (item['isObservation'] == true
-                                              ? AppTheme.accentPurple
-                                              : AppTheme.primaryGreen)
-                                          .withValues(alpha: 0.15),
+                                      color: iconBg.withValues(alpha: 0.15),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Icon(
-                                      item['isObservation'] == true
-                                          ? Icons.edit_note_rounded
-                                          : Icons.biotech_rounded,
-                                      color: item['isObservation'] == true
-                                          ? AppTheme.accentPurple
-                                          : AppTheme.primaryGreen,
+                                      iconData,
+                                      color: iconBg,
                                       size: 24,
                                     ),
                                   ),
