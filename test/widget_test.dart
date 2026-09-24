@@ -8,6 +8,10 @@ import 'package:fieldai_flutter/core/localization/language_service.dart';
 import 'package:fieldai_flutter/core/localization/app_strings.dart';
 import 'package:fieldai_flutter/features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'package:fieldai_flutter/features/auth/presentation/screens/register_screen.dart';
+import 'package:fieldai_flutter/features/field_guide/presentation/screens/field_guide_screen.dart';
+import 'package:fieldai_flutter/features/sync_manager/presentation/screens/sync_manager_screen.dart';
+import 'package:fieldai_flutter/features/treatment/presentation/screens/treatment_plan_screen.dart';
+import 'package:fieldai_flutter/features/treatment/presentation/screens/treatment_list_screen.dart';
 
 void main() {
   setUp(() {
@@ -99,4 +103,67 @@ void main() {
     expect(find.text('Organization / Cooperative'), findsOneWidget);
     expect(find.text('Role'), findsOneWidget);
   });
+
+  testWidgets('FieldGuideScreen renders crop categories and search bar', (WidgetTester tester) async {
+    await LanguageService.instance.setLanguage('en');
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.darkTheme,
+        home: const FieldGuideScreen(),
+      ),
+    );
+
+    expect(find.text('Agronomy Field Guide & Encyclopedia'), findsOneWidget);
+    expect(find.text('All'), findsOneWidget);
+    expect(find.text('Solanaceae'), findsOneWidget);
+    expect(find.text('Cereals'), findsOneWidget);
+    expect(find.text('Early Blight (Alternaria solani)'), findsOneWidget);
+    expect(find.text('Late Blight (Phytophthora infestans)'), findsOneWidget);
+  });
+
+  testWidgets('SyncManagerScreen renders server diagnostics and batch sync UI', (WidgetTester tester) async {
+    await LanguageService.instance.setLanguage('en');
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.darkTheme,
+        home: const SyncManagerScreen(),
+      ),
+    );
+
+    expect(find.text('Cloud Sync & Queue Manager'), findsOneWidget);
+    expect(find.text('Server Connectivity Diagnostics'), findsOneWidget);
+    expect(find.text('Ping Cloud Server'), findsOneWidget);
+    expect(find.text('Pending Synchronization Queue'), findsOneWidget);
+  });
+
+  testWidgets('TreatmentPlanScreen renders multi-phase schedule and dosage calculator', (WidgetTester tester) async {
+    await LanguageService.instance.setLanguage('en');
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.darkTheme,
+        home: const TreatmentPlanScreen(
+          crop: 'Tomato',
+          diseaseName: 'Early Blight (Alternaria solani)',
+        ),
+      ),
+    );
+
+    expect(find.text('Treatment & Recovery Schedule'), findsOneWidget);
+    expect(find.text('Field Size & Dosage Calculator'), findsOneWidget);
+    expect(find.text('Multi-Phase Treatment Schedule'), findsOneWidget);
+    expect(find.text('Save Treatment Plan to SQLite'), findsOneWidget);
+  });
+
+  testWidgets('TreatmentListScreen renders empty state and action button', (WidgetTester tester) async {
+    await LanguageService.instance.setLanguage('en');
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.darkTheme,
+        home: const TreatmentListScreen(),
+      ),
+    );
+
+    expect(find.text('Treatment & Recovery Plans'), findsOneWidget);
+  });
 }
+

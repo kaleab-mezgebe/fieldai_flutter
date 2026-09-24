@@ -27,10 +27,22 @@ FieldAI is an offline-first mobile application built with **Flutter**, designed 
    - On-device SQLite database storing field diagnoses, GPS coordinates, weather microclimates, and symptom notes.
    - Resilient background synchronization queue to sync records when internet connectivity is restored.
 
-5. **Offline RAG Agronomy Assistant**:
+5. **Actionable Treatment Plans & Dosage Calculator**:
+   - Multi-phase structured recovery schedules (*Phase 1: Emergency Sanitation*, *Phase 2: Bio/Chemical Rescue*, *Phase 3: Soil Spore Barriers*, *Phase 4: Plant Nutrition & Rotation*).
+   - Dynamic field area dosage calculator (computes water liters, fungicide grams, neem oil mL, and 16L knapsack sprayer tanks).
+   - Local SQLite milestone tracker and SMS/clipboard plan exporter for field extension.
+
+6. **Offline Agronomy Field Guide & Encyclopedia**:
+   - Comprehensive offline catalog of Solanaceae, Cereals, Legumes, and Cash Crops.
+   - In-depth plant pathology, conducive microclimates, organic remedies, and IPM protocols.
+
+7. **Cloud Sync & Queue Manager**:
+   - Complete queue inspector with background batch upload triggers and server latency diagnostics.
+
+8. **Offline RAG Agronomy Assistant**:
    - Evidence-based advisory engine grounded in FAO and CABI Plantwise agricultural extension manuals.
 
-6. **Outbreak Risk & Regional Analytics**:
+9. **Outbreak Risk & Regional Analytics**:
    - Regional spore proliferation vulnerability meter and pathogen prevalence breakdown with JSON data export.
 
 ---
@@ -44,15 +56,20 @@ lib/
 │   ├── database/         # SQLite on-device database & sync tracking
 │   ├── localization/     # LanguageService & AppStrings (en, am, ti, om)
 │   ├── network/          # Dio HTTP client for cloud sync & RAG chat
-│   └── theme/            # ThemeService & high-contrast Light/Dark palettes
+│   ├── sync/             # SyncService background synchronization queue
+│   ├── theme/            # ThemeService & high-contrast Light/Dark palettes
+│   └── treatment/        # TreatmentPlanService & dosage calculation engine
 ├── features/
 │   ├── ai_assistant/     # Agronomic RAG chat interface
 │   ├── analytics/        # Spore vulnerability meter & JSON exporter
 │   ├── auth/             # Sign-in & offline guest access
 │   ├── dashboard/        # Operational overview, quick tools & system controls
 │   ├── disease_analysis/ # Leaf scanner & AI explanation protocols
+│   ├── field_guide/      # Offline Agronomy Encyclopedia & Crop Pathologies
 │   ├── history/          # Local records list, search & filter tabs
-│   └── observations/     # GPS field observation logger
+│   ├── observations/     # GPS field observation logger
+│   ├── sync_manager/     # Cloud sync inspector & server latency tester
+│   └── treatment/        # Treatment plans, phase tracker & dosage calculator
 └── main.dart             # App entry point & reactive state binding
 ```
 
@@ -73,7 +90,7 @@ flutter pub get
 ```bash
 flutter test
 ```
-*(All unit & widget test suites validate language switching, theme toggling, and dashboard rendering).*
+*(All unit & widget test suites validate language switching, theme toggling, treatment dosage calculation, and dashboard rendering).*
 
 ### 4. Run Flutter Application
 ```bash
@@ -101,4 +118,4 @@ python3 ml/train_fieldai_model.py --data_dir /path/to/dataset --epochs 15 --expo
 ## 🧪 Verification & Quality
 
 - **Flutter Analyze**: `0 issues found`
-- **Flutter Test**: `100% pass rate (4/4 test suites)`
+- **Flutter Test**: `100% pass rate (9/9 test suites)`

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fieldai_flutter/core/theme/app_theme.dart';
 import 'package:fieldai_flutter/core/localization/app_strings.dart';
+import 'package:fieldai_flutter/features/treatment/presentation/screens/treatment_plan_screen.dart';
 
 class AiExplanationScreen extends StatelessWidget {
   final Map<String, dynamic> prediction;
@@ -180,7 +181,23 @@ class AiExplanationScreen extends StatelessWidget {
               return _buildActionStep(context, idx, act);
             }),
 
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => TreatmentPlanScreen(
+                      crop: crop,
+                      diseaseName: conditionName,
+                    ),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.healing_rounded),
+              label: Text(context.tr('start_treatment_plan')),
+            ),
             const SizedBox(height: 20),
+
             // Disclaimer footer
             Container(
               padding: const EdgeInsets.all(12),
@@ -202,6 +219,7 @@ class AiExplanationScreen extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(height: 12),
           ],
         ),
       ),

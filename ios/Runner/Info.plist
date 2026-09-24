@@ -59,12 +59,15 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>UISupportedInterfaceOrientations~ipad</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>FieldAI requires camera access to scan and diagnose crop leaf diseases in the field.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>FieldAI requires photo library access to upload leaf photos for disease diagnostics.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>FieldAI requires GPS access to record the precise field coordinates of crop observations and disease outbreaks.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>FieldAI requires GPS access to record the field coordinates of agricultural scouting.</string>
+	<key>CFBundleDisplayName</key>
+	<string>FieldAI</string>
 </dict>
 </plist>

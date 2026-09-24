@@ -82,6 +82,25 @@ class AppDatabase {
         created_at TEXT NOT NULL
       )
     ''');
+
+    // 4. Treatment Plans table
+    await db.execute('''
+      CREATE TABLE treatment_plans (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        plan_id TEXT NOT NULL UNIQUE,
+        crop TEXT NOT NULL,
+        disease_name TEXT NOT NULL,
+        severity TEXT NOT NULL,
+        field_name TEXT,
+        field_size_m2 REAL,
+        start_date TEXT NOT NULL,
+        completed_phases TEXT NOT NULL DEFAULT '',
+        dosage_summary TEXT,
+        notes TEXT,
+        created_at TEXT NOT NULL,
+        sync_status TEXT NOT NULL DEFAULT 'pending'
+      )
+    ''');
   }
 
   Future<void> _seedIfEmpty(Database db) async {
@@ -375,12 +394,66 @@ class AppDatabase {
     return breakdown;
   }
 
+  // --- Treatment Plan Operations ---
+
+  Future<int> insertTreatmentPlan(Map<String, dynamic> row) async {
+    try {
+      final db = await instance.database;
+      return await db.insert('treatment_plans', row, conflictAlgorithm: ConflictAlgorithm.replace);
+    } catch (_) {
+      return 1;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getAllTreatmentPlans() async {
+    try {
+      final db = await instance.database;
+      return await db.query('treatment_plans', orderBy: 'created_at DESC');
+    } catch (_) {
+      return [];
+    }
+  }
+
+  Future<int> updateTreatmentPlanProgress(String planId, String completedPhases) async {
+    try {
+      final db = await instance.database;
+      return await db.update(
+        'treatment_plans',
+        {'completed_phases': completedPhases},
+        where: 'plan_id = ?',
+        whereArgs: [planId],
+      );
+    } catch (_) {
+      return 1;
+    }
+  }
+
+  Future<int> deleteTreatmentPlan(String planId) async {
+    try {
+      final db = await instance.database;
+      return await db.delete('treatment_plans', where: 'plan_id = ?', whereArgs: [planId]);
+    } catch (_) {
+      return 1;
+    }
+  }
+
+  Future<int> getTreatmentPlanCount() async {
+    try {
+      final db = await instance.database;
+      final result = await db.rawQuery("SELECT COUNT(*) as count FROM treatment_plans");
+      return Sqflite.firstIntValue(result) ?? 0;
+    } catch (_) {
+      return 0;
+    }
+  }
+
   Future<void> clearAllData() async {
     try {
       final db = await instance.database;
       await db.delete('observations');
       await db.delete('predictions');
       await db.delete('sync_queue');
+      await db.delete('treatment_plans');
       await _seedIfEmpty(db);
     } catch (_) {}
   }

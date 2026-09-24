@@ -8,6 +8,7 @@ import 'package:fieldai_flutter/core/ai/edge_inference_service.dart';
 import 'package:fieldai_flutter/core/localization/app_strings.dart';
 import 'package:fieldai_flutter/features/disease_analysis/presentation/screens/ai_explanation_screen.dart';
 import 'package:fieldai_flutter/features/observations/presentation/screens/observation_screen.dart';
+import 'package:fieldai_flutter/features/treatment/presentation/screens/treatment_plan_screen.dart';
 
 class CropAnalysisScreen extends StatefulWidget {
   const CropAnalysisScreen({super.key});
@@ -549,6 +550,29 @@ class _CropAnalysisScreenState extends State<CropAnalysisScreen> {
                           ),
                         ),
                       ],
+                    ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.accentGreen,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => TreatmentPlanScreen(
+                                crop: _predictionResult!['crop'] ?? 'Tomato',
+                                diseaseName: _predictionResult!['condition_name'] ?? 'Early Blight',
+                              ),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.medication_rounded, size: 18),
+                        label: Text(context.tr('treatment_plan_btn')),
+                      ),
                     ),
                   ],
                 ),

@@ -10,6 +10,9 @@ import 'package:fieldai_flutter/features/ai_assistant/presentation/screens/ai_as
 import 'package:fieldai_flutter/features/observations/presentation/screens/observation_screen.dart';
 import 'package:fieldai_flutter/features/history/presentation/screens/history_screen.dart';
 import 'package:fieldai_flutter/features/analytics/presentation/screens/analytics_screen.dart';
+import 'package:fieldai_flutter/features/field_guide/presentation/screens/field_guide_screen.dart';
+import 'package:fieldai_flutter/features/sync_manager/presentation/screens/sync_manager_screen.dart';
+import 'package:fieldai_flutter/features/treatment/presentation/screens/treatment_list_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -299,6 +302,95 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   const Divider(),
 
+                  // Field Guide shortcut in Settings
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppTheme.accentGreen.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(Icons.menu_book_rounded, color: AppTheme.accentGreen),
+                    ),
+                    title: Text(
+                      context.tr('field_guide_title'),
+                      style: TextStyle(fontWeight: FontWeight.w700, color: context.textPrimary),
+                    ),
+                    subtitle: Text(
+                      context.tr('field_guide_sub'),
+                      style: TextStyle(color: context.textMuted, fontSize: 12),
+                    ),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: () {
+                      Navigator.of(ctx).pop();
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const FieldGuideScreen()),
+                      );
+                    },
+                  ),
+                  const Divider(),
+
+                  // Treatment Plans in Settings
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppTheme.infoBlue.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(Icons.healing_rounded, color: AppTheme.infoBlue),
+                    ),
+                    title: Text(
+                      context.tr('treatment_plans_header'),
+                      style: TextStyle(fontWeight: FontWeight.w700, color: context.textPrimary),
+                    ),
+                    subtitle: Text(
+                      context.tr('treatment_plans_sub'),
+                      style: TextStyle(color: context.textMuted, fontSize: 12),
+                    ),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: () async {
+                      Navigator.of(ctx).pop();
+                      await Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const TreatmentListScreen()),
+                      );
+                      _loadDashboardData();
+                    },
+                  ),
+                  const Divider(),
+
+                  // Sync Manager in Settings
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppTheme.warningAmber.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(Icons.sync_rounded, color: AppTheme.warningAmber),
+                    ),
+                    title: Text(
+                      context.tr('sync_manager_title'),
+                      style: TextStyle(fontWeight: FontWeight.w700, color: context.textPrimary),
+                    ),
+                    subtitle: Text(
+                      '${SyncService.instance.pendingCount} records pending sync',
+                      style: TextStyle(color: context.textMuted, fontSize: 12),
+                    ),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: () async {
+                      Navigator.of(ctx).pop();
+                      await Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const SyncManagerScreen()),
+                      );
+                      _loadDashboardData();
+                    },
+                  ),
+                  const Divider(),
+
                   // Reset / Re-seed SQLite Data
                   ListTile(
                     contentPadding: EdgeInsets.zero,
@@ -540,11 +632,41 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            _buildStatColumn(context.tr('diagnoses'), '$_analysisCount', AppTheme.primaryGreen),
+                            _buildStatColumn(
+                              context.tr('diagnoses'),
+                              '$_analysisCount',
+                              AppTheme.primaryGreen,
+                              () async {
+                                await Navigator.of(context).push(
+                                  MaterialPageRoute(builder: (_) => const HistoryScreen()),
+                                );
+                                _loadDashboardData();
+                              },
+                            ),
                             Container(width: 1, height: 36, color: context.cardBorder),
-                            _buildStatColumn(context.tr('observations'), '$_observationCount', AppTheme.accentGreen),
+                            _buildStatColumn(
+                              context.tr('observations'),
+                              '$_observationCount',
+                              AppTheme.accentGreen,
+                              () async {
+                                await Navigator.of(context).push(
+                                  MaterialPageRoute(builder: (_) => const HistoryScreen()),
+                                );
+                                _loadDashboardData();
+                              },
+                            ),
                             Container(width: 1, height: 36, color: context.cardBorder),
-                            _buildStatColumn(context.tr('pending_sync'), '$pendingSync', AppTheme.warningAmber),
+                            _buildStatColumn(
+                              context.tr('pending_sync'),
+                              '$pendingSync',
+                              AppTheme.warningAmber,
+                              () async {
+                                await Navigator.of(context).push(
+                                  MaterialPageRoute(builder: (_) => const SyncManagerScreen()),
+                                );
+                                _loadDashboardData();
+                              },
+                            ),
                           ],
                         ),
                       ],
@@ -599,6 +721,48 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     onTap: () async {
                       await Navigator.of(context).push(
                         MaterialPageRoute(builder: (_) => const ObservationScreen()),
+                      );
+                      _loadDashboardData();
+                    },
+                  ),
+                  const SizedBox(height: 12),
+
+                  _buildActionButton(
+                    context,
+                    title: context.tr('field_guide_title'),
+                    subtitle: context.tr('field_guide_sub'),
+                    icon: Icons.menu_book_rounded,
+                    color: AppTheme.accentGreen,
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const FieldGuideScreen()),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  _buildActionButton(
+                    context,
+                    title: context.tr('treatment_plans_header'),
+                    subtitle: context.tr('treatment_plans_sub'),
+                    icon: Icons.healing_rounded,
+                    color: AppTheme.infoBlue,
+                    onTap: () async {
+                      await Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const TreatmentListScreen()),
+                      );
+                      _loadDashboardData();
+                    },
+                  ),
+                  const SizedBox(height: 12),
+
+                  _buildActionButton(
+                    context,
+                    title: context.tr('sync_manager_title'),
+                    subtitle: context.tr('sync_manager_sub'),
+                    icon: Icons.sync_problem_rounded,
+                    color: AppTheme.warningAmber,
+                    onTap: () async {
+                      await Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const SyncManagerScreen()),
                       );
                       _loadDashboardData();
                     },
@@ -672,13 +836,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildStatColumn(String label, String value, Color color) {
-    return Column(
-      children: [
-        Text(value, style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: color)),
-        const SizedBox(height: 4),
-        Text(label, style: TextStyle(fontSize: 12, color: context.textMuted)),
-      ],
+  Widget _buildStatColumn(String label, String value, Color color, [VoidCallback? onTap]) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        child: Column(
+          children: [
+            Text(value, style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: color)),
+            const SizedBox(height: 4),
+            Text(label, style: TextStyle(fontSize: 12, color: context.textMuted)),
+          ],
+        ),
+      ),
     );
   }
 
