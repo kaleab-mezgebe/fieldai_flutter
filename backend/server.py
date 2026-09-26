@@ -11,9 +11,13 @@ Endpoints:
 - GET  /api/v1/analytics/summary
 """
 
+# pyrefly: ignore [missing-import]
 import uvicorn
-from fastapi import FastAPI, File, UploadFile, Form, HTTPException, status
+# pyrefly: ignore [missing-import]
+from fastapi import FastAPI, File, UploadFile, Form
+# pyrefly: ignore [missing-import]
 from fastapi.middleware.cors import CORSMiddleware
+# pyrefly: ignore [missing-import]
 from pydantic import BaseModel
 from typing import List, Optional
 import time
