@@ -20,6 +20,8 @@ import 'package:fieldai_flutter/features/analytics/presentation/screens/analytic
 import 'package:fieldai_flutter/features/observations/presentation/screens/observation_screen.dart';
 import 'package:fieldai_flutter/features/ai_assistant/presentation/screens/ai_assistant_screen.dart';
 import 'package:fieldai_flutter/features/disease_analysis/presentation/screens/ai_explanation_screen.dart';
+import 'package:fieldai_flutter/features/disease_analysis/presentation/screens/crop_analysis_screen.dart';
+import 'package:fieldai_flutter/features/history/presentation/screens/history_screen.dart';
 
 void main() {
   setUp(() {
@@ -287,6 +289,35 @@ void main() {
       expect(find.text('Early Blight (Alternaria solani)'), findsOneWidget);
       expect(find.text('Conducive Weather Microclimate'), findsOneWidget);
       expect(find.text('Start Actionable Treatment Plan'), findsOneWidget);
+    });
+
+    testWidgets('HistoryScreen renders filter tabs and title', (WidgetTester tester) async {
+      await LanguageService.instance.setLanguage('en');
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.darkTheme,
+          home: const HistoryScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('My Diagnoses & Observations'), findsOneWidget);
+      expect(find.textContaining('All'), findsWidgets);
+    });
+
+    testWidgets('CropAnalysisScreen renders sample leaf selector and camera actions', (WidgetTester tester) async {
+      await LanguageService.instance.setLanguage('en');
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.darkTheme,
+          home: const CropAnalysisScreen(),
+        ),
+      );
+
+      expect(find.text('Analyze Crop Leaf'), findsOneWidget);
+      expect(find.text('Or Test with Realistic Field Samples:'), findsOneWidget);
+      expect(find.text('Camera'), findsOneWidget);
+      expect(find.text('Gallery'), findsOneWidget);
     });
   });
 }

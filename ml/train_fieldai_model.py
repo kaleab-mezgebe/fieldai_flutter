@@ -48,9 +48,13 @@ def main():
     print("=" * 60)
 
     try:
+        # pyrefly: ignore [missing-import]
         import torch
+        # pyrefly: ignore [missing-import]
         import torch.nn as nn
+        # pyrefly: ignore [missing-import]
         import torch.optim as optim
+        # pyrefly: ignore [missing-import]
         from torchvision import datasets, transforms, models
 
         device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
