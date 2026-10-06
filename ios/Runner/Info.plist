@@ -67,7 +67,5 @@
 	<string>FieldAI requires GPS access to record the precise field coordinates of crop observations and disease outbreaks.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>FieldAI requires GPS access to record the field coordinates of agricultural scouting.</string>
-	<key>CFBundleDisplayName</key>
-	<string>FieldAI</string>
 </dict>
 </plist>
